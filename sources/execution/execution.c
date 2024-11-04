@@ -6,89 +6,78 @@
 /*   By: otboumeh <otboumeh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 12:53:03 by otboumeh          #+#    #+#             */
-/*   Updated: 2024/09/25 10:41:42 by otboumeh         ###   ########.fr       */
+/*   Updated: 2024/11/03 16:35:45 by otboumeh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
-static int	is_builtin(t_mini *mini)
-{
-	t_command	*cmd;
+#include "../../includes/minishell.h"
 
-	cmd = mini->cmds; 
-	if (!cmd || !cmd->full_cmd || !cmd->full_cmd[0])
-		return (0);
-	if (ft_strcmp(cmd->full_cmd[0], "cd") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "pwd") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "export") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "env") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "echo") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "unset") == 0)
-		return (1);
-	if (ft_strcmp(cmd->full_cmd[0], "exit") == 0)
-		return (1);
-	return (0);
+int is_builtin(char *cmd_str) {
+    if (ft_strcmp(cmd_str, "cd") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "pwd") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "export") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "env") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "echo") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "unset") == 0) 
+		return 1;
+    if (ft_strcmp(cmd_str, "exit") == 0) 
+		return 1;
+    return 0;
 }
 
-static void handle_builtin(t_mini *mini)
-{
-	if (is_builtin(mini))
-	{
-		builtin(mini);
-		return;
-	}
+int handle_builtin(t_mini *mini) {
+    // Get the command from the mini structure
+    t_command *cmd = mini->cmds;
+
+    // Check if the command exists and is built-in
+    if (cmd && is_builtin(cmd->full_cmd[0])) {
+        return builtin(mini); // Execute the built-in command and return its status
+    }
+    return 0; // Return 0 if not a built-in command
 }
 
-static void handle_single_command(t_mini *mini)
+static int handle_single_command(t_mini *mini)
 {
 	t_command *cmd = mini->cmds;
 
 	if (cmd->next == NULL)
 	{
 		execute_single_command(mini);
-		return;
+		return 1;
 	}
+	return 0;
 }
 
 void analizing_command(t_mini *mini)
 {	
-	t_command *cmd;
-	int i;
-
-	i = 0;
-	cmd = mini->cmds;
-	if (!cmd || !cmd->full_cmd || !cmd->full_cmd[0])
-	{
-		m_error("Error: No command provided", mini);
-		return;
-	}
-
-	handle_builtin(mini);               // Handle built-in commands
-	handle_single_command(mini);         // Handle single commands
-
-	while (cmd->next)					// calcul the number of commands
-	{
-    	cmd = cmd->next;
-    	i++;
-	}
-	handle_multiple_command(mini, i);	//handle multiple commads with pipe				
-}
-
-char *get_path_from_env(t_mini *mini)
-{
-    char *path_var;
-
-    path_var = return_envp_variable("PATH=", mini);
-    if (!path_var)
+    t_command *cmd = mini->cmds;
+    
+    if (!cmd || !cmd->full_cmd || !cmd->full_cmd[0])
     {
-        m_error("Error: PATH not found in environment variables", mini);
-        return (NULL);
+        m_err("Error: No command provided", 127, mini);
+        return;
     }
-    return (path_var);
+    if (cmd->next == NULL && is_builtin(cmd->full_cmd[0])) // Single built-in command
+    {
+        g_status = builtin(mini); // Directly execute and set the status
+        return;
+    }
+    else if (cmd->next == NULL) // Single non-built-in command
+    {
+        if (handle_single_command(mini))
+        {
+          return;
+        }
+    }
+    else // Multiple commands (pipeline)
+    {
+        handle_multiple_command(mini);
+    }
 }

@@ -1,44 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   ft_strstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dangonz3 <dangonz3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/12 16:29:13 by dangonz3          #+#    #+#             */
-/*   Updated: 2024/11/01 19:21:01 by dangonz3         ###   ########.fr       */
+/*   Created: 2024/09/27 20:39:42 by dangonz3          #+#    #+#             */
+/*   Updated: 2024/09/27 20:40:10 by dangonz3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strdup(const char *str)
+char	*ft_strstr(char *hay, char *ndle)
 {
-	int		i;
-	char	*ptr;
+	int	i;
+	int	j;
 
 	i = 0;
-	while (str[i] != '\0')
-		i++;
-	ptr = (char *)malloc((i + 1) * sizeof(char));
-	if (ptr == NULL)
-		return (NULL);
-	i = 0;
-	while (str[i] != '\0')
+	if (!ndle)
+		return (hay);
+	while (hay[i])
 	{
-		ptr[i] = (char)str[i];
+		j = 0;
+		while (hay[i + j] == ndle[j] && hay[i + j])
+			j++;
+		if (!ndle[j])
+			return (&hay[i]);
 		i++;
 	}
-	ptr[i] = '\0';
-	return (ptr);
+	return (NULL);	
 }
-
-
-/* int	main(void)
-{
-	char	str[] = "123fffff456";
-
-	printf("%s\n", ft_strdup(str));
-	printf("%s\n", strdup(str));
-	return (0);
-} */

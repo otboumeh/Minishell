@@ -3,46 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   one_command.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: otboumeh <otboumeh@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dangonz3 <dangonz3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 16:20:16 by otboumeh          #+#    #+#             */
-/*   Updated: 2024/09/22 16:21:04 by otboumeh         ###   ########.fr       */
+/*   Updated: 2024/11/01 17:48:45 by dangonz3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
-static void handle_input_redirection(t_command *cmd, t_mini *mini)
+void handle_input_redirection(t_command *cmd, t_mini *mini)
 {
     if (cmd->infile != STDIN_FILENO)
     {
         if (dup2(cmd->infile, STDIN_FILENO) == -1)
         {
-            m_error("Input redirection failed", mini);
+            m_err("Input redirection failed", 2, mini);
             exit(EXIT_FAILURE);
         }
         close(cmd->infile);
     }
 }
 
-static void handle_output_redirection(t_command *cmd, t_mini *mini)
+void handle_output_redirection(t_command *cmd, t_mini *mini)
 {
     if (cmd->outfile != STDOUT_FILENO)
     {
         if (dup2(cmd->outfile, STDOUT_FILENO) == -1)
         {
-            m_error("Output redirection failed", mini);
+            m_err("Output redirection failed", 2, mini);
             exit(EXIT_FAILURE);
         }
         close(cmd->outfile);
     }
 }
 
-static void execute_command(t_command *cmd, t_mini *mini)
-{
+void execute_command(t_command *cmd, t_mini *mini)
+{   
     if (execve(cmd->full_path, cmd->full_cmd, mini->envp) == -1)
     {
-        m_error("Command execution failed", mini);
+        m_err("Command execution failed", 126, mini);
         exit(EXIT_FAILURE);
     }
 }
@@ -55,6 +55,7 @@ void execute_single_command(t_mini *mini)
     if (pid < 0)
     {
         m_error("Fork failed", mini);
+        g_status = 1;  // Set error code for fork failure
         return;
     }
     else if (pid == 0)
@@ -69,6 +70,9 @@ void execute_single_command(t_mini *mini)
             close(cmd->infile);
         if (cmd->outfile != STDOUT_FILENO)
             close(cmd->outfile);
-        wait(NULL);
+        
+        int status;
+        waitpid(pid, &status, 0);
+        g_status = WEXITSTATUS(status);  // Set g_status to child’s exit status
     }
 }
