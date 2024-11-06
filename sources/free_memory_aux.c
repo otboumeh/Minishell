@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   free_memory_aux.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dani <dani@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 21:15:19 by dangonz3          #+#    #+#             */
-/*   Updated: 2024/11/04 23:23:19 by dani             ###   ########.fr       */
+/*   Created: 2024/11/04 16:13:52 by dangonz3          #+#    #+#             */
+/*   Updated: 2024/11/05 00:03:44 by dani             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../includes/minishell.h"
 
-int	ft_strcmp(const char *s1, const char *s2)
+void	m_free(char **ptr)
 {
-	while (*s1 && (*s1 == *s2))
-	{
-		s1++;
-		s2++;
-	}
-	return (*(unsigned char *)s1 - *(unsigned char *)s2);
+	free((void *)*ptr);
+	*ptr = NULL;
 }

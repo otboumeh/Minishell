@@ -6,101 +6,90 @@
 /*   By: otboumeh <otboumeh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 17:29:53 by dangonz3          #+#    #+#             */
-/*   Updated: 2024/11/03 16:51:08 by otboumeh         ###   ########.fr       */
+/*   Updated: 2024/11/06 17:37:22 by otboumeh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int g_status;
+static int	g_ctrl_c_flag;
 
-
-static int ctrl_c_flag = 0;
-// void handler_ctrl_quit(int sig)
-// {
-// 	(void)sig;
-// 	if(flagg)
-// 	{
-// 		ft_putstr_fd("Quit\n", STDERR_FILENO);
-// 	}
-// }
-void handle_true(int sig)
+void	handle_true(int sig)
 {
 	if (sig == SIGINT)
-	{	
-		ctrl_c_flag = 1;
+	{
+		g_ctrl_c_flag = 1;
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 	}
 }
 
-
- void handler_false(int sig)
-{	
+void	handler_false(int sig)
+{
 	if (sig == SIGINT)
-	{	
+	{
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
-void init_signals(int flag)
+
+void	init_signals(int flag)
 {
 	if (flag == 0)
-	{	
+	{
 		signal(SIGINT, handler_false);
 		signal(SIGQUIT, SIG_IGN);
 	}
 	else if (flag == 1)
 	{
 		signal(SIGINT, handle_true);
-		signal(SIGQUIT, SIG_IGN);	
+		signal(SIGQUIT, SIG_IGN);
 	}
-} 
+}
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_mini	*m;
 
-	g_status = 0;
-	m = init_struct(envp); //inicializa las estructuras
+	m = init_struct(envp);
 	if (!m)
 		return (1);
 	if (!getprompt(m))
 		return (1);
 	init_signals(1);
-	while (argc && argv) //siempre deberia ser verdadera. Similar a poner (1), pero maneja el error improbable de que argv y/o argc no existan
+	while (argc && argv)
 	{
-		ctrl_c_flag = 0;
-		m->input = readline(m->prompt); //lee el input del usuario, recibe el promp inicial como argumento
-		if (ctrl_c_flag)
-		{	
-			continue; // Skip further processing if Ctrl-C was pressed
+		g_ctrl_c_flag = 0;
+		m->input = readline(m->prompt);
+		if (g_ctrl_c_flag)
+		{
+			continue ;
 		}
-		if (manage_input(m) == -1) //procesa el input del usuario para poder ejecutarlo
+		if (manage_input(m) == -1)
 			break ;
 	}
-	free_tmini(m); //el argumento de exit es el código de salida del programa. g_status es la variable global donde se almacenan los errores.
+	free_tmini(m);
 	return (0);
 }
 
 int	manage_input(t_mini *m)
 {
 	if (!m->input)
-		return (ft_printf("exit\n"), -1); //cuando el puntero del usuario es NULL terminamos la mini. Es este el comportamiento esperado?
+		return (ft_printf("exit\n"), -1);
 	if (!check_user_input(m))
 		return (1);
 	if (ft_strlen(m->input) > 0)
-		add_history(m->input); //función del sistema relacinada con la gestión de read_line. Añade el argumento a la lista del historial de read_line. Se usa write_history para guardar el historial en el archivo seleccionado. Y read_history para leerlo.
+		add_history(m->input);
 	if (!lexer(m))
 		return (0);
 	if (!parser(m))
 		return (0);
-	superprinter(m);
 	analizing_command(m);
-	free_lexer_parser(m); //libera toda la memoria asociada con el lexer y el parser.
+	superprinter(m);
+	free_lexer_parser(m);
 	free_tcommand(m);
 	return (1);
 }

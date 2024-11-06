@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: otboumeh <otboumeh@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dangonz3 <dangonz3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/26 12:22:12 by otboumeh          #+#    #+#             */
-/*   Updated: 2024/11/03 14:07:34 by otboumeh         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:50:06 by dangonz3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-extern int	g_status;
 
 static char	*get_env_value(char **envp, char *var_name)
 {
@@ -52,46 +50,43 @@ static void	update_env_variable(char **envp, char *var_name, char *new_value)
 	}
 }
 
-static char *get_target_dir(t_command *cmd, t_mini *mini)
+static char	*get_target_dir(t_command *cmd, t_mini *mini)
 {
-    if (cmd->full_cmd[1])
-        return (cmd->full_cmd[1]);
-    return (get_env_value(mini->envp, "HOME"));
+	if (cmd->full_cmd[1])
+		return (cmd->full_cmd[1]);
+	return (get_env_value(mini->envp, "HOME"));
 }
 
-static void update_pwd_variables(char *oldpwd, t_mini *mini)
+static void	update_pwd_variables(char *oldpwd, t_mini *mini)
 {
-    char cwd[PATH_MAX];
-    
-    update_env_variable(mini->envp, "OLDPWD", oldpwd);
-    if (getcwd(cwd, sizeof(cwd)))
-        update_env_variable(mini->envp, "PWD", cwd);
+	char	cwd[PATH_MAX];
+
+	update_env_variable(mini->envp, "OLDPWD", oldpwd);
+	if (getcwd(cwd, sizeof(cwd)))
+		update_env_variable(mini->envp, "PWD", cwd);
 }
 
-static void print_cd_error(char *dir)
+int	builtin_cd(t_command *cmd, t_mini *mini)
 {
-    ft_dprintf(STDERR_FILENO, "cd: %s: No such file or directory\n", dir);
-}
+	char	cwd[PATH_MAX];
+	char	*oldpwd;
+	char	*target_dir;
 
-int builtin_cd(t_command *cmd, t_mini *mini)
-{
-    char cwd[PATH_MAX];
-    char *oldpwd = getcwd(cwd, sizeof(cwd));
-    char *target_dir = get_target_dir(cmd, mini);
-
-    if (!target_dir)
-    {
-        ft_dprintf(STDERR_FILENO, "cd: HOME not set\n");
-        g_status = 1;
-        return g_status;
-    }
-    if (chdir(target_dir) == -1)
-    {
-        print_cd_error(target_dir);
-        g_status = 1;
-        return g_status;
-    }
-    update_pwd_variables(oldpwd, mini);
-    g_status = 0;
-    return g_status;
+	oldpwd = getcwd(cwd, sizeof(cwd));
+	target_dir = get_target_dir(cmd, mini);
+	if (!target_dir)
+	{
+		ft_dprintf(STDERR_FILENO, "cd: HOME not set\n");
+		mini->g_status = 1;
+		return (mini->g_status);
+	}
+	if (chdir(target_dir) == -1)
+	{
+		print_cd_error(target_dir);
+		mini->g_status = 1;
+		return (mini->g_status);
+	}
+	update_pwd_variables(oldpwd, mini);
+	mini->g_status = 0;
+	return (mini->g_status);
 }
