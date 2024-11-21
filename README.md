@@ -30,50 +30,101 @@ A simple Unix shell implementation developed as part of the 42 curriculum. This 
    ```bash
    git clone git@github.com:otboumeh/Minishell.git
    cd minishell
-Compile the project:
+2. Compile the project:
 
   ```bash
-make
+   make
 ```
-Run the shell:
+3. Run the shell:
 
 ```bash
-./minishell
+   ./minishell
 ```
-Usage
-Execute standard Unix commands:
+### Usage
+   a. Execute standard Unix commands:
 
 ```bash
-ls -la
+   ls -la
 ```
-Use built-in commands:
+  b. Use built-in commands:
 
-bash
-Copiar código
-minishell$ export VAR=value
-minishell$ echo $VAR
-Chain commands with pipes:
+```bash
+ export VAR=value
+```
+```bash
+   echo $VAR
+```
+   c. Chain commands with pipes:
 
-bash
-Copiar código
-minishell$ ls | grep txt
-Redirect input/output:
+```bash
+   ls | grep txt
+```
+   d. Redirect input/output:
 
-bash
-Copiar código
-minishell$ echo "Hello, world!" > file.txt
-minishell$ cat < file.txt
-File Structure
-src/: Source files
-main.c: Entry point for the shell
-parser.c: Handles input parsing and tokenization
-executor.c: Executes commands
-include/: Header files
-Makefile: Build instructions
-Known Limitations
-Limited support for some advanced shell features
-Background jobs (&) not yet implemented
-Future Improvements
-Add support for background processes
-Enhance error reporting
-Improve input parsing for edge cases
+```bash
+   echo "Hello, world!" > file.txt
+```
+```bash
+   cat < file.txt
+```
+## Built-in Commands
+
+Minishell supports several built-in commands to manage the shell environment:
+
+- `cd [directory]`: Changes the current working directory.
+  - Example: 
+    ```bash
+     cd /path/to/directory
+    ```
+
+- `export [VAR=value]`: Sets or updates environment variables.
+  - Example: 
+    ```bash
+     export MY_VAR=hello
+     echo $MY_VAR
+    hello
+    ```
+
+- `unset [VAR]`: Removes an environment variable.
+  - Example: 
+    ```bash
+    unset MY_VAR
+    ```
+
+- `env`: Displays all environment variables.
+  - Example: 
+    ```bash
+    env
+    ```
+
+- `exit`: Exits the shell.
+  - Example:
+    ```bash
+    exit
+    ```
+
+---
+## File Structure
+
+- `src/`: Source files
+  - `main.c`: Entry point for the shell
+  - `parser.c`: Handles input parsing and tokenization
+  - `execution.c`: Executes commands
+- `include/`: Header files
+- `Makefile`: Build instructions
+
+---
+
+## Known Limitations
+
+- Limited support for some advanced shell features.
+- Background jobs (`&`) not yet implemented.
+
+---
+
+## Future Improvements
+
+- Add support for background processes.
+- Enhance error reporting.
+- Improve input parsing for edge cases.
+
