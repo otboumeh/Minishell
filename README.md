@@ -23,7 +23,7 @@ A simple Unix shell implementation developed as part of the 42 curriculum. This 
 - A Unix-based operating system (Linux or macOS)
 - GCC compiler
 - GNU Make
-
+---
 ### Installation
 
 1. Clone the repository:
@@ -40,6 +40,7 @@ A simple Unix shell implementation developed as part of the 42 curriculum. This 
 ```bash
    ./minishell
 ```
+---
 ### Usage
    a. Execute standard Unix commands:
 
@@ -67,6 +68,7 @@ A simple Unix shell implementation developed as part of the 42 curriculum. This 
 ```bash
    cat < file.txt
 ```
+---
 ## Built-in Commands
 
 Minishell supports several built-in commands to manage the shell environment:
@@ -127,4 +129,8 @@ Minishell supports several built-in commands to manage the shell environment:
 - Add support for background processes.
 - Enhance error reporting.
 - Improve input parsing for edge cases.
+---
+## Authors
 
+- **otboumeh** ([GitHub Profile](https://github.com/otboumeh))
+- **inad5050** ([GitHub Profile](https://github.com/inad5050))
