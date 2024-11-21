@@ -28,24 +28,24 @@ A simple Unix shell implementation developed as part of the 42 curriculum. This 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/minishell.git
+   git clone git@github.com:otboumeh/Minishell.git
    cd minishell
 Compile the project:
 
-bash
-Copiar código
+  ```bash
 make
+```
 Run the shell:
 
-bash
-Copiar código
+```bash
 ./minishell
+```
 Usage
 Execute standard Unix commands:
 
-bash
-Copiar código
-minishell$ ls -la
+```bash
+ls -la
+```
 Use built-in commands:
 
 bash
